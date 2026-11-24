@@ -14,8 +14,19 @@ LINE = "Thanks for your email. I haven't been watered since March. I'll get back
 OUTPUT_PATH = "/output/entry.txt"
 
 
+def _validate(line: str) -> str:
+    """Fail closed: entry must be exactly one non-blank line, 1-120 chars."""
+    if not line or line != line.strip():
+        raise ValueError("entry must be a single non-blank line")
+    if "\n" in line or "\r" in line:
+        raise ValueError("entry must not contain line breaks")
+    if not 1 <= len(line) <= 120:
+        raise ValueError(f"entry is {len(line)} chars, must be 1-120")
+    return line
+
+
 def main() -> None:
-    assert 1 <= len(LINE) <= 120, f"entry is {len(LINE)} chars, must be 1-120"
+    _validate(LINE)
     os.makedirs(os.path.dirname(OUTPUT_PATH), exist_ok=True)
     with open(OUTPUT_PATH, "w", encoding="utf-8", newline="") as f:
         f.write(LINE)
